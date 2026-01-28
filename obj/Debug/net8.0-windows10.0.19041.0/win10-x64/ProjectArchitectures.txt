@@ -1,1 +1,0 @@
-E:\JournalManagementSystem-main (3)\JournalManagementSystem-main\JournalManagementSystem.csproj;x64
