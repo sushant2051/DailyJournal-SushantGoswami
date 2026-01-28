@@ -1,0 +1,402 @@
+@page "/journal-entry"
+@page "/journal-entry/{Date:datetime}"
+@using MoodTrack_Journal.Models
+@using MoodTrack_Journal.Services
+@using EntryModel = MoodTrack_Journal.Models.JournalEntry
+@inject IJournalService JournalService
+@inject IMoodService MoodService
+@inject NavigationManager Navigation
+
+<PageTitle>Journal Entry - MoodTrack Journal</PageTitle>
+
+<div class="entry-form-container">
+    <div class="form-header">
+        <h2 class="form-title">
+            <span class="form-icon">@(IsEditMode ? "✏️" : "✨")</span>
+            @(IsEditMode ? "Edit Journal Entry" : "New Journal Entry")
+        </h2>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>⚠️ Error:</strong> @ErrorMessage
+        </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            <strong>✅ Success:</strong> @SuccessMessage
+        </div>
+    }
+
+    <div class="form-card">
+        <EditForm Model="@CurrentEntry" OnValidSubmit="@HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="entryDate" class="form-label">
+                        <span class="label-icon">📅</span> Date
+                    </label>
+                    <InputDate id="entryDate" class="form-control" @bind-Value="CurrentEntry.Date" />
+                    <ValidationMessage For="@(() => CurrentEntry.Date)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="entryTitle" class="form-label">
+                    <span class="label-icon">📝</span> Title
+                </label>
+                <InputText id="entryTitle" class="form-control" @bind-Value="CurrentEntry.Title" placeholder="Enter a title for your entry..." />
+                <ValidationMessage For="@(() => CurrentEntry.Title)" />
+            </div>
+
+            <div class="form-group">
+                <label for="entryContent" class="form-label">
+                    <span class="label-icon">📄</span> Content
+                </label>
+                <InputTextArea id="entryContent" class="form-control content-textarea" rows="12" @bind-Value="CurrentEntry.Content" placeholder="Write your thoughts here... (Supports Markdown formatting)" />
+                <small class="form-text text-muted">
+                    💡 Tip: You can use Markdown formatting for rich text
+                </small>
+                <ValidationMessage For="@(() => CurrentEntry.Content)" />
+            </div>
+
+            <div class="mood-section">
+                <h3 class="section-title">Mood Selection</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="label-icon">😊</span> Primary Mood <span class="required">*</span>
+                    </label>
+                    <InputSelect class="form-select" @bind-Value="CurrentEntry.PrimaryMoodId">
+                        <option value="0">Select a mood...</option>
+                        @foreach (var mood in AllMoods)
+                        {
+                            <option value="@mood.Id">@mood.Name (@mood.Category)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => CurrentEntry.PrimaryMoodId)" />
+                </div>
+
+                <div class="mood-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">😌</span> Secondary Mood 1 (Optional)
+                        </label>
+                        <InputSelect class="form-select" @bind-Value="SecondaryMood1IdValue">
+                            <option value="">None</option>
+                            @foreach (var mood in AllMoods.Where(m => m.Id != CurrentEntry.PrimaryMoodId))
+                            {
+                                <option value="@mood.Id">@mood.Name (@mood.Category)</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">😌</span> Secondary Mood 2 (Optional)
+                        </label>
+                        <InputSelect class="form-select" @bind-Value="SecondaryMood2IdValue">
+                            <option value="">None</option>
+                            @foreach (var mood in AllMoods.Where(m => m.Id != CurrentEntry.PrimaryMoodId && m.Id != CurrentEntry.SecondaryMood1Id))
+                            {
+                                <option value="@mood.Id">@mood.Name (@mood.Category)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="entryCategory" class="form-label">
+                    <span class="label-icon">🏷️</span> Category (Optional)
+                </label>
+                <InputText id="entryCategory" class="form-control" @bind-Value="CurrentEntry.Category" placeholder="e.g., Work, Personal, Travel..." />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-icon">@(IsEditMode ? "💾" : "✨")</span>
+                    @(IsEditMode ? "Update Entry" : "Create Entry")
+                </button>
+                @if (IsEditMode)
+                {
+                    <button type="button" class="btn btn-danger" @onclick="HandleDelete">
+                        <span class="btn-icon">🗑️</span>
+                        Delete Entry
+                    </button>
+                }
+                <button type="button" class="btn btn-secondary" @onclick="HandleCancel">
+                    <span class="btn-icon">↩️</span>
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<style>
+    .entry-form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .form-icon {
+        font-size: 2rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .label-icon {
+        font-size: 1.2rem;
+    }
+
+    .required {
+        color: #dc3545;
+        margin-left: 0.25rem;
+    }
+
+    .form-control, .form-select {
+        font-size: 1rem;
+        padding: 0.875rem 1rem;
+    }
+
+    .content-textarea {
+        resize: vertical;
+        min-height: 200px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+    }
+
+    .form-text {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .mood-section {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .mood-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e9ecef;
+        flex-wrap: wrap;
+    }
+
+    .form-actions .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .entry-form-container {
+            padding: 1rem;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+        }
+
+        .mood-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public DateTime? Date { get; set; }
+
+    private EntryModel CurrentEntry { get; set; } = new()
+    {
+        Date = DateTime.Today,
+        Title = string.Empty,
+        Content = string.Empty,
+        PrimaryMoodId = 0
+    };
+
+    private List<Mood> AllMoods { get; set; } = new();
+    private bool IsEditMode { get; set; }
+    private string ErrorMessage { get; set; } = string.Empty;
+    private string SuccessMessage { get; set; } = string.Empty;
+
+    private int? SecondaryMood1IdValue
+    {
+        get => CurrentEntry.SecondaryMood1Id;
+        set => CurrentEntry.SecondaryMood1Id = value == 0 ? null : value;
+    }
+
+    private int? SecondaryMood2IdValue
+    {
+        get => CurrentEntry.SecondaryMood2Id;
+        set => CurrentEntry.SecondaryMood2Id = value == 0 ? null : value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllMoods = await MoodService.GetAllMoodsAsync();
+        
+        if (Date.HasValue)
+        {
+            var existingEntry = await JournalService.GetEntryByDateAsync(Date.Value);
+            if (existingEntry != null)
+            {
+                CurrentEntry = existingEntry;
+                IsEditMode = true;
+            }
+            else
+            {
+                CurrentEntry.Date = Date.Value.Date;
+            }
+        }
+        else
+        {
+            var todayEntry = await JournalService.GetEntryByDateAsync(DateTime.Today);
+            if (todayEntry != null)
+            {
+                CurrentEntry = todayEntry;
+                IsEditMode = true;
+            }
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
+
+            if (CurrentEntry.PrimaryMoodId == 0)
+            {
+                ErrorMessage = "Please select a primary mood.";
+                return;
+            }
+
+            if (IsEditMode)
+            {
+                await JournalService.UpdateEntryAsync(CurrentEntry);
+                SuccessMessage = "Entry updated successfully!";
+            }
+            else
+            {
+                await JournalService.CreateEntryAsync(CurrentEntry);
+                SuccessMessage = "Entry created successfully!";
+                IsEditMode = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task HandleDelete()
+    {
+        if (CurrentEntry.Id > 0)
+        {
+            var confirmed = await Task.FromResult(true);
+            if (confirmed)
+            {
+                try
+                {
+                    await JournalService.DeleteEntryAsync(CurrentEntry.Id);
+                    Navigation.NavigateTo("/");
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = $"Error deleting entry: {ex.Message}";
+                }
+            }
+        }
+    }
+
+    private void HandleCancel()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

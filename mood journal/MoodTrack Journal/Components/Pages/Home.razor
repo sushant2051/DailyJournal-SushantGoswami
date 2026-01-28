@@ -1,0 +1,301 @@
+﻿@page "/"
+@using MoodTrack_Journal.Models
+@using MoodTrack_Journal.Services
+@inject IJournalService JournalService
+@inject NavigationManager Navigation
+
+<PageTitle>Home - MoodTrack Journal</PageTitle>
+
+<div class="home-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">
+                <span class="title-icon">📔</span>
+                My Journal Entries
+            </h1>
+            <a href="/journal-entry" class="btn btn-primary new-entry-btn">
+                <span class="btn-icon">➕</span>
+                <span class="btn-text">New Entry</span>
+            </a>
+        </div>
+    </div>
+
+    @if (Entries == null)
+    {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading your entries...</p>
+        </div>
+    }
+    else if (!Entries.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <h2>No entries yet</h2>
+            <p>Start your journaling journey by creating your first entry!</p>
+            <a href="/journal-entry" class="btn btn-primary">
+                <span class="btn-icon">✨</span>
+                Create First Entry
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="entries-grid">
+            @foreach (var entry in Entries)
+            {
+                <div class="entry-card" @onclick="@(() => Navigation.NavigateTo("/journal-entry/" + entry.Date.ToString("yyyy-MM-dd")))">
+                    <div class="entry-header">
+                        <h3 class="entry-title">@entry.Title</h3>
+                        <span class="entry-date">@entry.Date.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    
+                    <p class="entry-preview">
+                        @(entry.Content.Length > 200 ? entry.Content.Substring(0, 200) + "..." : entry.Content)
+                    </p>
+                    
+                    <div class="entry-footer">
+                        <div class="mood-badges">
+                            <span class="mood-badge primary">
+                                @entry.PrimaryMood?.Name
+                            </span>
+                            @if (entry.SecondaryMood1 != null)
+                            {
+                                <span class="mood-badge secondary">
+                                    @entry.SecondaryMood1.Name
+                                </span>
+                            }
+                            @if (entry.SecondaryMood2 != null)
+                            {
+                                <span class="mood-badge secondary">
+                                    @entry.SecondaryMood2.Name
+                                </span>
+                            }
+                        </div>
+                        <span class="entry-timestamp">
+                            Updated @entry.UpdatedAt.ToString("MMM dd, HH:mm")
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .home-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .new-entry-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .btn-icon {
+        font-size: 1.2rem;
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        gap: 1rem;
+    }
+
+    .loading-text {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .entries-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .entry-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .entry-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        border-color: #667eea;
+    }
+
+    .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .entry-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        flex: 1;
+    }
+
+    .entry-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+        white-space: nowrap;
+        font-weight: 500;
+    }
+
+    .entry-preview {
+        color: #495057;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .entry-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .mood-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .mood-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .mood-badge.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .mood-badge.secondary {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .entry-timestamp {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    @@media (max-width: 768px) {
+        .home-container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .entries-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .new-entry-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+@code {
+    private List<Models.JournalEntry>? Entries { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Entries = await JournalService.GetAllEntriesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading entries: {ex.Message}");
+            Entries = new List<Models.JournalEntry>();
+        }
+    }
+}

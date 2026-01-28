@@ -1,0 +1,53 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Ripple\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.modules.json",
+      "PackagePath": "staticwebassets\\_framework\\blazor.modules.json"
+    },
+    {
+      "Id": "C:\\Users\\Ripple\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.webview.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webview.js"
+    },
+    {
+      "Id": "D:\\01Study\\01Collage\\3rd year\\Application Development\\CW-2026\\sajal\\MoodTrack Journal\\MoodTrack Journal\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\scopedcss\\bundle\\MoodTrack Journal.styles.css",
+      "PackagePath": "staticwebassets\\MoodTrack Journal.styles.css"
+    },
+    {
+      "Id": "D:\\01Study\\01Collage\\3rd year\\Application Development\\CW-2026\\sajal\\MoodTrack Journal\\MoodTrack Journal\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "D:\\01Study\\01Collage\\3rd year\\Application Development\\CW-2026\\sajal\\MoodTrack Journal\\MoodTrack Journal\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "D:\\01Study\\01Collage\\3rd year\\Application Development\\CW-2026\\sajal\\MoodTrack Journal\\MoodTrack Journal\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\01Study\\01Collage\\3rd year\\Application Development\\CW-2026\\sajal\\MoodTrack Journal\\MoodTrack Journal\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\staticwebassets\\msbuild.MoodTrack Journal.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\staticwebassets\\msbuild.MoodTrack Journal.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\staticwebassets\\msbuild.build.MoodTrack Journal.props",
+      "PackagePath": "build\\MoodTrack Journal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\staticwebassets\\msbuild.buildMultiTargeting.MoodTrack Journal.props",
+      "PackagePath": "buildMultiTargeting\\MoodTrack Journal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\staticwebassets\\msbuild.buildTransitive.MoodTrack Journal.props",
+      "PackagePath": "buildTransitive\\MoodTrack Journal.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

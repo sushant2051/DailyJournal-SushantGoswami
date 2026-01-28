@@ -1,0 +1,119 @@
+.page[b-qr6fm66s6i] {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100%;
+}
+
+main[b-qr6fm66s6i] {
+    flex: 1;
+    min-width: 0;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+
+.sidebar[b-qr6fm66s6i] {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    min-width: 250px;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-content[b-qr6fm66s6i] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-content[b-qr6fm66s6i]  > .sidebar-header {
+    flex-shrink: 0;
+}
+
+.sidebar-content[b-qr6fm66s6i]  > .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-content[b-qr6fm66s6i]  > .sidebar-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.top-row[b-qr6fm66s6i] {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row[b-qr6fm66s6i]  a, .top-row[b-qr6fm66s6i]  .btn-link {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+        text-decoration: none;
+    }
+
+    .top-row[b-qr6fm66s6i]  a:hover, .top-row[b-qr6fm66s6i]  .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .top-row[b-qr6fm66s6i]  a:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+@media (max-width: 640.98px) {
+    .page[b-qr6fm66s6i] {
+        flex-direction: column;
+    }
+
+    .sidebar[b-qr6fm66s6i] {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+    }
+
+    main[b-qr6fm66s6i] {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .top-row[b-qr6fm66s6i] {
+        justify-content: space-between;
+    }
+
+    .top-row[b-qr6fm66s6i]  a, .top-row[b-qr6fm66s6i]  .btn-link {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 641px) {
+    .top-row[b-qr6fm66s6i] {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .top-row.auth[b-qr6fm66s6i]  a:first-child {
+        flex: 1;
+        text-align: right;
+        width: 0;
+    }
+
+    .top-row[b-qr6fm66s6i], article[b-qr6fm66s6i] {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
